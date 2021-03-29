@@ -5,14 +5,14 @@ posts = [
     {
         'author': 'Trmúa Hmề',
         'title': 'Article 1',
-        'content': 'Cách để trở thành Trmúa Hmề official',
-        'date-posted': 'April 20, 2021'
+        'content': 'Cách để trở thành Trmúa Hmề trong mắt người khác official',
+        'date_posted': 'April 20, 2021'
     },
     {
         'author': 'Trmúa Hmề bủh',
         'title': 'Article 2',
-        'content': 'Cách để trở thành Trmúa Hmề bủh',
-        'date-posted': 'April 20, 2021'
+        'content': 'Cách để trở thành Trmúa Hmề dảk',
+        'date_posted': 'April 20, 2021'
     },
 ]
 
