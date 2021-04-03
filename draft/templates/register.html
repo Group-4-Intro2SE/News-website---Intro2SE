@@ -7,7 +7,7 @@
 
             <fieldset class = 'form-group'>
                 <legend class = 'border-bottom mb-4'>Join Today</legend>
-                <div class = 'form_group' style="margin: 0 0 1.3rem 0">
+                <div class = 'form_group' style="margin: 0 0 1.1rem 0">
 
                     <!-- username -->
                     {{ form.username.label(class = 'form-control-label') }}
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- email -->
-                <div class = 'form_group' style="margin: 1.3rem 0">
+                <div class = 'form_group' style="margin: 1.1rem 0">
                     {{ form.email.label(class = 'form-control-label') }}
 
                     {% if form.email.errors %}
@@ -41,8 +41,24 @@
 
                 </div>
 
+                <!-- date of birth -->
+                <div class = 'form_group' style="margin: 1.1rem 0">
+                    {{ form.date.label(class = 'form-control-label') }}
+
+                    {% if form.date.errors %}
+                    {{ form.date(class = 'form-control is-invalid') }}
+                        <div class = 'invalid-feedback'>
+                            {% for error in form.date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.date(class = 'form-control') }}
+                    {% endif %}
+                </div>
+
                 <!-- password -->
-                <div class = 'form_group' style="margin: 1.3rem 0">
+                <div class = 'form_group' style="margin: 1.1rem 0">
                     {{ form.password.label(class = 'form-control-label') }}
 
                     {% if form.password.errors %}
@@ -62,7 +78,7 @@
                 </div>
 
                 <!-- confirm password  -->
-                <div class = 'form_group' style="margin: 1.3rem 0 0 0">
+                <div class = 'form_group' style="margin: 1.1rem 0 0 0">
                     {{ form.confirm_password.label(class = 'form-control-label') }}
                     {% if form.confirm_password.errors %}
                     {{ form.confirm_password(class = 'form-control is-invalid') }}
@@ -78,15 +94,19 @@
                 </div>
             </fieldset>
 
-            <div class = 'form_group'>
-                {{ form.submit(class = 'btn btn-outline-info') }}
+            <div>
+                <div class = 'form_group'>
+                    {{ form.submit(class = 'btn btn-outline-info') }}
+                </div>
+
+                <div class = 'border-top pt-1' style="text-align: center;">
+                    <small class = 'text-muted'>
+                        Already have an account? <a class = "ml-2" href = "{{ url_for('login') }}">Sign In</a>
+                    </small>
+                </div> 
             </div>
+            
         </form>
     </div>
 
-    <div class = 'border-top pt-3 h5'>
-        <small class = 'text-muted'>
-            Already have an account? <a class = "ml-2" href = "{{ url_for('login') }}">Sign In</a>
-        </small>
-    </div> 
 {% endblock content%}
