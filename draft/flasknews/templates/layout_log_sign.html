@@ -19,6 +19,8 @@
 </head>
 <body>
     <header class="site-header">
+
+      <!-- nav menu bar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
           <a class="navbar-brand mr-4" href="/">News Website</a>
@@ -32,12 +34,14 @@
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="/login">Login</a>
-              <a class="nav-item nav-link" href="/register">Register</a>
+              <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+              <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
             </div>
           </div>
         </div>
       </nav>
+      <!-- end nav menu bar -->
+
     </header>
     <main role="main" class="container" style="width: 30vw">
       <div class="col-md">
