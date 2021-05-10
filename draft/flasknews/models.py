@@ -9,7 +9,15 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    type_user = db.Column(db.Integer, default = 0) # 0: viewer, 1: reporter
+    # 0: viewer, 1: reporter
+    type_user = db.Column(db.Integer, default = 0) 
+
+    # gender
+    is_male = db.Column(db.Integer, default = 1)
+
+    # personal description
+    description = db.Column(db.String(240), nullable = False, default= "Hi, I'm a new user")
+
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
@@ -18,7 +26,7 @@ class User(db.Model, UserMixin):
 
     # query print
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+        return f"User('{self.username}', '{self.email}', '{self.is_male}', '{self.description}', '{self.image_file}')"
 
 
 class Post(db.Model):

@@ -57,6 +57,18 @@
                     {% endif %}
                 </div>
 
+                <!-- Gender -->
+                <div class = 'form_group' style="margin: 1.1rem 0">
+                {{ form.is_male.label(class = 'form-control-label') }}
+                {{ form.is_male(class = 'form-control form-control-mg') }}
+                </div>
+
+                <!-- description -->
+                <div class = 'form_group' style="margin: 1.1rem 0">
+                {{ form.description.label(class = 'form-control-label') }}
+                {{ form.description(class = 'form-control') }}
+                </div>
+
                 <!-- password -->
                 <div class = 'form_group' style="margin: 1.1rem 0">
                     {{ form.password.label(class = 'form-control-label') }}

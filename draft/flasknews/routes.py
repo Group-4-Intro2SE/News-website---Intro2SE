@@ -45,11 +45,16 @@ def register():
     if form.validate_on_submit():
         # hash the password
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username = form.username.data, email = form.email.data, password = hashed_password, type_user = form.type_user)
+        user = User(username = form.username.data, 
+                    email = form.email.data, 
+                    password = hashed_password,
+                    is_male = form.is_male.data, 
+                    type_user = form.type_user,
+                    description = form.description.data)
         
         # add to database
         db.session.add(user)
-        db.session.commit()              
+        db.session.commit()
 
         flash(f'Account created for {form.username.data}!', 'success')
 
@@ -94,10 +99,16 @@ def logout():
     else:
         return redirect(url_for('home'))
 
+@app.route("/warticle")
+def warticle():
+    return
+
 @app.route('/account')
 @login_required #require login to access this page
 def account(): 
     # store previous page into session for auto redirect
     session['url'] = url_for('account')
 
-    return render_template('account.html', title = 'Account')
+    image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
+
+    return render_template('account.html', title = 'Account', image_file = image_file)
