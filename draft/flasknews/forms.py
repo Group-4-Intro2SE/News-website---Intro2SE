@@ -10,7 +10,8 @@ class RegistrationForm(FlaskForm):
     date = DateField('Date of birth (optional) - dd/mm/YYYY', format='%d/%m/%Y', validators=(Optional(),))
     password = PasswordField('Password', validators= [DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators= [DataRequired(), EqualTo('password')])
-    
+    type_user = 0
+
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
