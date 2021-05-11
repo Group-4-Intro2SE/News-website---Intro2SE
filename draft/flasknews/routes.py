@@ -1,32 +1,35 @@
 import os 
 import secrets
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from flasknews import app, db, bcrypt
-from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm
 from flasknews.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
 session = {}
-posts = [
-    {
-        'author': 'Trmúa Hmề',
-        'title': 'Article 1',
-        'content': 'Cách để trở thành Trmúa Hmề trong mắt người khác official',
-        'date_posted': 'April 20, 2021'
-    },
-    {
-        'author': 'Trmúa Hmề bủh',
-        'title': 'Article 2',
-        'content': 'Cách để trở thành Trmúa Hmề dảk',
-        'date_posted': 'April 20, 2021'
-    },
-]
+# posts = [
+#     {
+#         'author': 'Trmúa Hmề',
+#         'title': 'Article 1',
+#         'content': 'Cách để trở thành Trmúa Hmề trong mắt người khác official',
+#         'date_posted': 'April 20, 2021'
+#     },
+#     {
+#         'author': 'Trmúa Hmề bủh',
+#         'title': 'Article 2',
+#         'content': 'Cách để trở thành Trmúa Hmề dảk',
+#         'date_posted': 'April 20, 2021'
+#     },
+# ]
 
 @app.route("/")
 @app.route("/home")
 def home():
     # store previous page into session for auto redirect   
     session['url'] = url_for('home')
+
+    # post query from database
+    posts = Post.query.all()
 
     return render_template('home.html', posts = posts)
 
@@ -44,6 +47,35 @@ def register():
         return redirect(url_for('home'))
 
     form = RegistrationForm()
+    if form.validate_on_submit():
+        # hash the password
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username = form.username.data, 
+                    email = form.email.data, 
+                    password = hashed_password,
+                    is_male = form.is_male.data, 
+                    type_user = form.type_user,
+                    description = form.description.data)
+        
+        # add to database
+        db.session.add(user)
+        db.session.commit()
+
+        flash(f'Account created for {form.username.data}!', 'success')
+
+        # redirect user to login page
+        return redirect(url_for('login'))
+
+    return render_template('register.html', title = 'Register', form = form)
+
+
+@app.route("/reg_reporter", methods = ['GET', 'POST'])
+def register_reporter():
+    # user already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    form = RegistrationFormReporter()
     if form.validate_on_submit():
         # hash the password
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -101,10 +133,6 @@ def logout():
     else:
         return redirect(url_for('home'))
 
-@app.route("/warticle")
-def warticle():
-    return
-
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8) # file name generate
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -142,3 +170,66 @@ def account():
     image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
 
     return render_template('account.html', title = 'Account', image_file = image_file, form = form)
+
+
+@app.route("/article/new", methods = ['GET', 'POST'])
+@login_required
+def new_article():
+    # Only reporter can access this page
+    if current_user.type_user:
+        form = ArticleForm()
+        if form.validate_on_submit():
+            post = Post(title = form.title.data, content = form.content.data, author = current_user)
+            
+            # add post to database
+            db.session.add(post)
+            db.session.commit()
+
+            flash('Your post has been created', 'success')
+            return redirect(url_for('home'))
+        return render_template('create_article.html', title = 'New Article', form = form, legend = 'New article')
+    else:
+        print("You cant access to this page")
+
+# dynamic url
+@app.route("/article/<int:post_id>")
+def article(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('article.html', title = post.title, post = post)
+
+
+@app.route("/article/<int:post_id>/update", methods = ['GET', 'POST'])
+@login_required
+def update_article(post_id):
+    if current_user.type_user:
+        post = Post.query.get_or_404(post_id)
+        if post.author != current_user:
+            abort(403)
+        form = ArticleForm()
+
+        if form.validate_on_submit():
+            post.title = form.title.data 
+            post.content = form.content.data 
+            db.session.commit()
+            flash('Your post has been updated', 'success')
+            return redirect(url_for('article', post_id = post.id))
+        elif request.method == 'GET':
+            # assign data to input field
+            form.title.data = post.title
+            form.content.data = post.content
+
+        return render_template('create_article.html', title = 'Update Article', form = form, legend = 'Update article')
+
+
+@app.route("/article/<int:post_id>/delete", methods = ['POST'])
+@login_required
+def delete_article(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    
+    # delete
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post: \'' + post.title + '\' has been deleted', 'success')
+    return redirect(url_for('home'))

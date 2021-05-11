@@ -5,15 +5,22 @@
         <img class="rounded-circle account-img" src="{{ image_file }}">
         <div class="media-body">
             <h2 class="account-heading">{{ current_user.username }}</h2>
-            <p class="text-secondary">{{ current_user.email }}</p>
-
-            {% if current_user.is_gender %}
-                <p class="text-secondary">Gender: Male</p>
+            <hr>
+            {% if current_user.type_user %}
+                <h6 class="h4">Reporter</h6>
             {% else %}
-                <p class="text-secondary">Gender: Female</p>
+                <h6 class="h4">Viewer</h6>
             {% endif %}
 
-            <p class="text-secondary">{{ current_user.description }}</p>
+            <p class="text-secondary"><b>Email:</b> {{ current_user.email }}</p>
+
+            {% if current_user.is_male %}
+                <p class="text-secondary"><b>Gender:</b> Male</p>
+            {% else %}
+                <p class="text-secondary"><b>Gender:</b> Female</p>
+            {% endif %}
+
+            <p class="text-secondary"><b>Description:</b> {{ current_user.description }}</p>
 
 
 
@@ -24,7 +31,7 @@
             {{ form.hidden_tag() }}
 
             <fieldset class = 'form-group'>
-                <legend class = 'shadow p-4 mb-4 bg-white'>Manage account</legend>
+                <legend class = 'shadow p-4 mb-4 bg-white'>Account setting</legend>
                 <div class = 'form_group' style="margin: 0 0 1.1rem 0">
                     <!-- username -->
                     {{ form.username.label(class = 'form-control-label') }}

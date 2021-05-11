@@ -42,7 +42,8 @@
                   {% if current_user.type_user == 0 %}
                     <a class="nav-item nav-link" href="">Type: Viewer</a>
                   {% else %}
-                    <a class="nav-item nav-link" href="{{ url_for('warticle') }}">New article</a>
+                                        
+                    <a class="nav-item nav-link" href="/article/new">New article</a>
                     <a class="nav-item nav-link" href="">Type: Reporter</a>
                   {% endif %}
 

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, SelectField, FileField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, SelectField, FileField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Optional, ValidationError
 from flasknews.models import User
 
@@ -26,6 +26,9 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email = email.data).first()
         if user:
             raise ValidationError('That email is taken. Please choose another one')
+
+class RegistrationFormReporter(RegistrationForm):
+    type_user = 1
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators = [DataRequired(), Email()])
@@ -58,3 +61,9 @@ class UpdateAccountForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
+
+
+class ArticleForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Body Content', validators= [DataRequired()])
+    submit = SubmitField('Post')
