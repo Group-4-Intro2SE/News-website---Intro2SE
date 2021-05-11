@@ -26,6 +26,23 @@
 
             </div>
 
+            <!-- Description -->
+            <div class='form_group' style="margin: 1.3rem 0">
+                {{ form.description.label(class = 'form-control-label') }}
+
+                {% if form.description.errors %}
+                {{ form.description(class = 'form-control is-invalid') }}
+                <div class='invalid-feedback'>
+                    {% for error in form.description.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.description(class = 'form-control') }}
+                {% endif %}
+
+            </div>
+
             <!-- content -->
             <div class='form_group' style="margin: 1.3rem 0">
                 {{ form.content.label(class = 'form-control-label') }}

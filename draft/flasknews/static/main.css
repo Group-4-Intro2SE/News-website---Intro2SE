@@ -83,3 +83,11 @@ body {
     float: none;
     margin: 0 auto;
   }
+
+  .large-height {
+    height: 50vh !important;
+  }
+  
+  a:hover {
+    text-decoration: none;
+  }

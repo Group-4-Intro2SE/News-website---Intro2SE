@@ -179,7 +179,7 @@ def new_article():
     if current_user.type_user:
         form = ArticleForm()
         if form.validate_on_submit():
-            post = Post(title = form.title.data, content = form.content.data, author = current_user)
+            post = Post(title = form.title.data, description = form.description.data, content = form.content.data, author = current_user)
             
             # add post to database
             db.session.add(post)
@@ -210,6 +210,8 @@ def update_article(post_id):
         if form.validate_on_submit():
             post.title = form.title.data 
             post.content = form.content.data 
+            post.description = form.description.data
+
             db.session.commit()
             flash('Your post has been updated', 'success')
             return redirect(url_for('article', post_id = post.id))
@@ -217,6 +219,7 @@ def update_article(post_id):
             # assign data to input field
             form.title.data = post.title
             form.content.data = post.content
+            form.description.data = post.description
 
         return render_template('create_article.html', title = 'Update Article', form = form, legend = 'Update article')
 

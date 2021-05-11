@@ -64,6 +64,7 @@ class UpdateAccountForm(FlaskForm):
 
 
 class ArticleForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    content = TextAreaField('Body Content', validators= [DataRequired()])
-    submit = SubmitField('Post')
+    title = StringField('Title', validators=[DataRequired(), Length(max = 50)])
+    description = TextAreaField('Short description', validators = [DataRequired(),  Length(max = 300)], render_kw={'class': 'form-control', 'rows': 5})
+    content = TextAreaField('Body Content', validators= [DataRequired(), Length(max = 5000)], render_kw={'class': 'form-control', 'rows': 20})
+    submit = SubmitField('Submit')
