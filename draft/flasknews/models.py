@@ -31,13 +31,15 @@ class User(db.Model, UserMixin):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(100), nullable = False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     category = db.Column(db.String(20))
 
+    cover_image = db.Column(db.String(20), nullable = False)
+
     # query print
     def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}'), '{self.category}'"
+        return f"Post('{self.title}', '{self.date_posted}', '{self.category}')"

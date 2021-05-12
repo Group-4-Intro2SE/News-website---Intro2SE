@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class='content-section' style="margin: 0 auto; width: 50vw;">
-    <form method='POST' action="">
+    <form method = 'POST' action = "" enctype = "multipart/form-data">
         <!-- add token -->
         {{ form.hidden_tag() }}
 
@@ -31,6 +31,19 @@
                 {{ form.category.label(class = 'form-control-label') }}
                 {{ form.category(class = 'form-control form-control-mg') }}
             </div>
+
+            <!-- account profile image -->
+            {% if title  != 'Update Article' %}
+            <div class = 'form_group' style="margin: 1.1rem 0">
+                {{ form.cover_image.label(class = 'form-control-label') }}
+                {{ form.cover_image(class = "form-control-file")}}
+                {% if form.cover_image.errors %}
+                    {% for error in form.cover_image.errors %}
+                        <span class = 'text-danger'>{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
 
 
             <!-- Description -->

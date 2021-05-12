@@ -3,7 +3,7 @@ import secrets
 from sqlalchemy import desc
 from flask import render_template, url_for, flash, redirect, request, abort
 from flasknews import app, db, bcrypt
-from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm
+from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm, UpdateArticleForm
 from flasknews.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -23,10 +23,10 @@ session = {}
 #     },
 # ]
 
-article_by_categories = []
+
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods = ['GET', 'POST'])
 def home():
     # store previous page into session for auto redirect   
     session['url'] = url_for('home')
@@ -38,16 +38,18 @@ def home():
     if posts:
         latest = posts[0]
         posts = posts[1:4]
+    article_by_categories = []
 
     categories = ["Stars", 'TV Shows', "Music", "Sport", "Fashion", "Travel", "Life"]
     for cat in categories:
         query_articles = Post.query.filter_by(category = cat).order_by(desc(Post.date_posted)).all()
-        if query_articles:
-            temp = query_articles
-        article_by_categories.append(temp)
+        article_by_categories.append(query_articles)
+    print(article_by_categories)
 
+    image_file = url_for('static', filename = 'article_pics/')
 
-    return render_template('home.html', posts = posts, latest = latest, article_by_categories = article_by_categories, categories = categories, len = len(categories))
+    return render_template('home.html', posts = posts, latest = latest, article_by_categories = article_by_categories, categories = categories, len = len(categories), image_file = image_file)
+
 @app.route("/about")
 def about():
     # store previous page into session for auto redirect
@@ -157,6 +159,17 @@ def save_picture(form_picture):
 
     return picture_fn
 
+
+def save_picture_2(form_picture):
+    random_hex = secrets.token_hex(8) # file name generate
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/article_pics', picture_fn) 
+    form_picture.save(picture_path)
+
+    return picture_fn
+
+
 @app.route('/account', methods = ['GET', 'POST'])
 @login_required #require login to access this page
 def account(): 
@@ -166,6 +179,7 @@ def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
+            print(form.picture.data)
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
 
@@ -186,29 +200,44 @@ def account():
 
     return render_template('account.html', title = 'Account', image_file = image_file, form = form)
 
-
+temptemp = ''
 @app.route("/article/new", methods = ['GET', 'POST'])
 @login_required
 def new_article():
     # Only reporter can access this page
-    if current_user.type_user:
-        form = ArticleForm()
-        if form.validate_on_submit():
-            post = Post(title = form.title.data, 
-                    description = form.description.data, 
-                    content = form.content.data, 
-                    author = current_user,
-                    category = form.category.data)
-            
-            # add post to database
-            db.session.add(post)
-            db.session.commit()
+    form = ArticleForm()
 
-            flash('Your post has been created', 'success')
-            return redirect(url_for('home'))
-        return render_template('create_article.html', title = 'New Article', form = form, legend = 'New article')
-    else:
-        print("You cant access to this page")
+    post = Post(title = form.title.data, 
+        description = form.description.data, 
+        content = form.content.data, 
+        author = current_user,
+        category = form.category.data)
+    picture_file = ''
+    image_file = ''
+    
+    if form.validate_on_submit():
+        if form.cover_image.data:
+            picture_file = save_picture_2(form.cover_image.data)
+            post.cover_image = picture_file
+            global temptemp
+            temptemp = post.cover_image
+            print("Post cover image: ", post.cover_image)
+
+            image_file = url_for('static', filename = 'article_pics/' + temptemp)
+            print("TEMP: ", temptemp)
+            print("Image file: ", image_file)
+
+        # add post to database
+        db.session.add(post)
+        db.session.commit()
+
+        flash('Your post has been created', 'success')
+        return redirect(url_for('home'))
+
+    
+    print("image file: ", image_file)
+
+    return render_template('create_article.html', title = 'New Article', form = form, legend = 'New article')
 
 # dynamic url
 @app.route("/article/<int:post_id>")
@@ -224,7 +253,7 @@ def update_article(post_id):
         post = Post.query.get_or_404(post_id)
         if post.author != current_user:
             abort(403)
-        form = ArticleForm()
+        form = UpdateArticleForm()
 
         if form.validate_on_submit():
             post.title = form.title.data 

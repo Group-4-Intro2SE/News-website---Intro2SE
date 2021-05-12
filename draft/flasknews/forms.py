@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, SelectField, FileField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, SelectField, FileField, TextAreaField, MultipleFileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Optional, ValidationError
 from flasknews.models import User
 
@@ -64,8 +64,20 @@ class UpdateAccountForm(FlaskForm):
 
 
 class ArticleForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired(), Length(max = 50)])
+    title = StringField('Title', validators=[DataRequired(), Length(max = 80)])
     description = TextAreaField('Short description', validators = [DataRequired(),  Length(max = 300)], render_kw={'class': 'form-control', 'rows': 5})
     content = TextAreaField('Body Content', validators= [DataRequired(), Length(max = 5000)], render_kw={'class': 'form-control', 'rows': 20})
     category = SelectField("Categories", choices = [("Stars", "Stars"), ("TV Shows", 'TV Shows'), ("Music", "Music"), ("Sport", "Sport"), ("Fashion", "Fashion"), ("Travel", "Travel"), ("Life", "Life")])
+    
+    cover_image = FileField('Upload cover picture', validators = [DataRequired(), FileAllowed(['jpg', 'png'])])
+    
+    submit = SubmitField('Submit')
+
+class UpdateArticleForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(max = 80)])
+    description = TextAreaField('Short description', validators = [DataRequired(),  Length(max = 300)], render_kw={'class': 'form-control', 'rows': 5})
+    content = TextAreaField('Body Content', validators= [DataRequired(), Length(max = 5000)], render_kw={'class': 'form-control', 'rows': 20})
+    category = SelectField("Categories", choices = [("Stars", "Stars"), ("TV Shows", 'TV Shows'), ("Music", "Music"), ("Sport", "Sport"), ("Fashion", "Fashion"), ("Travel", "Travel"), ("Life", "Life")])
+    
+    
     submit = SubmitField('Submit')
