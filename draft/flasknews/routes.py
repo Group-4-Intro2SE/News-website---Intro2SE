@@ -1,5 +1,6 @@
 import os 
 import secrets
+from sqlalchemy import desc
 from flask import render_template, url_for, flash, redirect, request, abort
 from flasknews import app, db, bcrypt
 from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm
@@ -22,6 +23,8 @@ session = {}
 #     },
 # ]
 
+article_by_categories = []
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -29,10 +32,22 @@ def home():
     session['url'] = url_for('home')
 
     # post query from database
-    posts = Post.query.all()
+    # posts = Post.query.all()
+    posts = Post.query.order_by(desc(Post.date_posted)).all()
+    latest = posts
+    if posts:
+        latest = posts[0]
+        posts = posts[1:4]
 
-    return render_template('home.html', posts = posts)
+    categories = ["Stars", 'TV Shows', "Music", "Sport", "Fashion", "Travel", "Life"]
+    for cat in categories:
+        query_articles = Post.query.filter_by(category = cat).order_by(desc(Post.date_posted)).all()
+        if query_articles:
+            temp = query_articles
+        article_by_categories.append(temp)
 
+
+    return render_template('home.html', posts = posts, latest = latest, article_by_categories = article_by_categories, categories = categories, len = len(categories))
 @app.route("/about")
 def about():
     # store previous page into session for auto redirect
@@ -179,7 +194,11 @@ def new_article():
     if current_user.type_user:
         form = ArticleForm()
         if form.validate_on_submit():
-            post = Post(title = form.title.data, description = form.description.data, content = form.content.data, author = current_user)
+            post = Post(title = form.title.data, 
+                    description = form.description.data, 
+                    content = form.content.data, 
+                    author = current_user,
+                    category = form.category.data)
             
             # add post to database
             db.session.add(post)
@@ -211,6 +230,7 @@ def update_article(post_id):
             post.title = form.title.data 
             post.content = form.content.data 
             post.description = form.description.data
+            post.category = form.category.data
 
             db.session.commit()
             flash('Your post has been updated', 'success')
@@ -220,6 +240,7 @@ def update_article(post_id):
             form.title.data = post.title
             form.content.data = post.content
             form.description.data = post.description
+            form.category.data = post.category
 
         return render_template('create_article.html', title = 'Update Article', form = form, legend = 'Update article')
 
