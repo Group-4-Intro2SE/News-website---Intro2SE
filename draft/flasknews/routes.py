@@ -57,6 +57,13 @@ def about():
 
     return render_template('about.html', title = 'About')
 
+@app.route("/home/<cat>")
+def category(cat):
+    posts = Post.query.filter_by(category = cat)
+    image_file = url_for('static', filename = 'article_pics/')
+
+    return render_template('search_results.html', posts = posts, image_file = image_file)
+
 @app.route("/register", methods = ['GET', 'POST'])
 def register():
     # user already logged in
@@ -388,6 +395,7 @@ def admin_dash_article():
     plt.tick_params(axis='x', colors='black')
     plt.tick_params(axis='y', colors='black')
 
+    print(df_group)
     plt.savefig('flasknews/static/article_line_plot.png')
 
     image_file = url_for('static', filename = 'article_line_plot.png')

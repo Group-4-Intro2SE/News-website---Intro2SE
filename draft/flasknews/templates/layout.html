@@ -73,13 +73,13 @@
     <!-- end nav  -->
 
     <ul class="list-group list-group-horizontal-sm fflex-fill justify-content-around" style="flex-direction: row;">
-      <li class="list-group-item">Stars</li>
-      <li class="list-group-item">TV Shows</li>
-      <li class="list-group-item">Music</li>
-      <li class="list-group-item">Sport</li>
-      <li class="list-group-item">Fashion</li>
-      <li class="list-group-item">Travel</li>
-      <li class="list-group-item">Life</li>
+      <a href=" {{ url_for('category', cat = 'Stars') }}" class="list-group-item">Stars</a>
+      <a href=" {{ url_for('category', cat = 'TV Shows') }}" class="list-group-item">TV Shows</a>
+      <a href=" {{ url_for('category', cat = 'Music') }}" class="list-group-item">Music</a>
+      <a href=" {{ url_for('category', cat = 'Sport') }}" class="list-group-item">Sport</a>
+      <a href=" {{ url_for('category', cat = 'Fashion') }}" class="list-group-item">Fashion</a>
+      <a href=" {{ url_for('category', cat = 'Travel') }}" class="list-group-item">Travel</a>
+      <a href=" {{ url_for('category', cat = 'Life') }}" class="list-group-item">Life</a>
     </ul>
 
     <style>
@@ -93,11 +93,13 @@
         text-align: center;
         background: white;
         color: black;
+        transition: 0s ease-in-out;
       }
 
       .list-group-item:hover {
         background: #262626;
         color: white;
+        transition: 0s ease-in-out;
       }
 
       #search-bar {
