@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- content -->
+<legend class='border-bottom mb-4'>{{ legend }}</legend>
+
+
+    <form method = 'POST' action = "">
+        <!-- add token -->
+        {{ form.hidden_tag() }}
+
+        <fieldset class = 'form-group'>
+
+            <!-- search -->
+            <div class = 'form_group' style="margin: 1.3rem 0">
+
+                {% if form.search.errors %}
+                    {{ form.search(class = 'form-control is-invalid') }}
+                    <div class = 'invalid-feedback'>
+                        {% for error in form.search.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                {% else %}
+                {{ form.search(class = 'form-control' , style = 'width: 30%; border: 0px solid white; margin: 3rem auto; height: 3rem; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;' )}}
+
+                {% endif %}
+
+                <div class = 'form_group' style="text-align: center; width: 50%; margin: 3em auto;">
+                    {{ form.submit(class = 'btn btn-outline-info') }}
+                </div>
+ 
+        </fieldset>
+
+    </form>
+
+{% endblock content%}

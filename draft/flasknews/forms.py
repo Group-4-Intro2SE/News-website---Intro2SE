@@ -81,3 +81,8 @@ class UpdateArticleForm(FlaskForm):
     
     
     submit = SubmitField('Submit')
+
+
+class SearchForm(FlaskForm):
+    search = StringField('search', validators=[DataRequired()])
+    submit = SubmitField('Search')

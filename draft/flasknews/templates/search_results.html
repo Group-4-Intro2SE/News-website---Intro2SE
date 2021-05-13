@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class = 'row'>
+    {% for post in posts %}
+        <div class="col-md-4 col-sm-6 mt-4">
+            <a class="card h-100" href="{{ url_for('article', post_id = post.id) }}">
+                <img src="{{ image_file }}{{ post.cover_image }}"
+                    class="card-img-top" alt="..." width="300" height="200">
+                <div class="card-body">
+                    <div class="row-md d-flex justify-content-between align-items-center mb-2 mt-1">
+                        <small class="col-md4 px-2 text-white text-light text-center"
+                            style="font-size: 1rem ;border-radius: 5px; color: white; background:#1266F1;">{{
+                            post.author.username }}</small>
+                        <small class="col-md4 px-2 text-white text-light text-center"
+                            style="font-size: 1rem ;border-radius: 5px; color: white; background:#262626;">{{
+                            post.date_posted.strftime('%d-%m-%Y | %H:%M') }}</small>
+                    </div>
+                    <hr>
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text" style="color: black;">{{ post.description }}...</p>
+                </div>
+            </a>
+        </div>
+    {% endfor %} 
+
+    <style type="text/css">
+        a {
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            transform: scale(1);
+            transition: .1s ease-in-out;
+        }
+
+        a:hover {
+            text-decoration: none;
+            transform: scale(1.02);
+            transition: .1s ease-in-out;
+        }
+
+        .nav-link:hover {
+            background: #262626;
+        }
+
+        .card-text {
+            /* white-space: nowrap; */
+            /* width: 100%; */
+
+            display: block;
+            /* or inline-block */
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            overflow: hidden;
+            max-height: 5.4em;
+            line-height: 1.8em;
+        }
+
+        .row #center {
+            justify-content: center !important;
+        }
+    </style>
+</div>
+{% endblock content%}

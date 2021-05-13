@@ -3,7 +3,7 @@ import secrets
 from sqlalchemy import desc
 from flask import render_template, url_for, flash, redirect, request, abort
 from flasknews import app, db, bcrypt
-from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm, UpdateArticleForm
+from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm, UpdateArticleForm, SearchForm
 from flasknews.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -44,7 +44,7 @@ def home():
     for cat in categories:
         query_articles = Post.query.filter_by(category = cat).order_by(desc(Post.date_posted)).all()
         article_by_categories.append(query_articles)
-    print(article_by_categories)
+    # print(article_by_categories)
 
     image_file = url_for('static', filename = 'article_pics/')
 
@@ -88,6 +88,7 @@ def register():
 
 @app.route("/reg_reporter", methods = ['GET', 'POST'])
 def register_reporter():
+
     # user already logged in
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -179,7 +180,7 @@ def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
-            print(form.picture.data)
+            # print(form.picture.data)
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
 
@@ -204,6 +205,7 @@ temptemp = ''
 @app.route("/article/new", methods = ['GET', 'POST'])
 @login_required
 def new_article():
+    session['url'] = url_for('article/new')
     # Only reporter can access this page
     form = ArticleForm()
 
@@ -221,11 +223,8 @@ def new_article():
             post.cover_image = picture_file
             global temptemp
             temptemp = post.cover_image
-            print("Post cover image: ", post.cover_image)
 
             image_file = url_for('static', filename = 'article_pics/' + temptemp)
-            print("TEMP: ", temptemp)
-            print("Image file: ", image_file)
 
         # add post to database
         db.session.add(post)
@@ -235,13 +234,14 @@ def new_article():
         return redirect(url_for('home'))
 
     
-    print("image file: ", image_file)
 
     return render_template('create_article.html', title = 'New Article', form = form, legend = 'New article')
 
 # dynamic url
 @app.route("/article/<int:post_id>")
 def article(post_id):
+    session['url'] = url_for('article', post_id = post_id)
+
     post = Post.query.get_or_404(post_id)
     return render_template('article.html', title = post.title, post = post)
 
@@ -286,3 +286,44 @@ def delete_article(post_id):
     db.session.commit()
     flash('Your post: \'' + post.title + '\' has been deleted', 'success')
     return redirect(url_for('home'))
+
+@app.route("/search", methods = ['GET', 'POST'])
+def search():
+    session['url'] = url_for('search')
+
+    form = SearchForm()
+    if form.validate_on_submit():
+        query = form.search.data
+        return redirect((url_for('search_results', query=query)))  # or what you want
+        # return redirect((url_for('search_results'))) 
+
+    return render_template('search.html', form=form, title = 'Search', legend = 'Search')
+
+# @app.route("/results", methods = ['GET', 'POST'])
+# def search_results():
+#     print("ping")
+#     return render_template('search_results.html')
+
+@app.route("/search/results/<query>")
+def search_results(query):
+    session['url'] = url_for('search_results', query = query)
+
+    results = []
+    posts = Post.query.all()
+    print(posts)
+    for post in posts:
+        query_lower = query.lower()
+        if query_lower in post.title.lower() or query_lower in post.description.lower() or query_lower in post.content.lower():
+            results.append(post)
+
+    image_file = url_for('static', filename = 'article_pics/')
+    if len(results) == 0:
+        return redirect(url_for('search_error'))
+    return render_template('search_results.html', query=query, posts=results, image_file = image_file)
+
+@app.route("/search/error")
+def search_error():
+    session['url'] = url_for('search_error')
+    
+    image_file = url_for('static', filename = 'search_error.jpg')
+    return render_template('search_error.html', image_file = image_file)

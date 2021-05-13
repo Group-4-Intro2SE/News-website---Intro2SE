@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-6" style="margin: 0 auto; text-align: center; font-size: 2.2rem;">
+      <div class="card">
+        <div class="card-body">
+            <div class="crop">
+                <img src="{{ image_file }}" width="250" height="250">
+            </div>
+            <p class="card-text">Sorry! No result found :"<</p>
+            <p style="font-size: 1.5rem;" class="card-text">Please try different keywords</p>
+            <a href="{{ url_for('search') }}" class="btn btn-primary" style="background: #1266f1;">Search again</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock content%}
