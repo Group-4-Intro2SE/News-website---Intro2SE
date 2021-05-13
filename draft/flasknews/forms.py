@@ -11,7 +11,7 @@ class RegistrationForm(FlaskForm):
     date = DateField('Date of birth (optional) - dd/mm/YYYY', format='%d/%m/%Y', validators=(Optional(),))
     is_male = SelectField("Gender", choices = [(1, "Male"), (0, 'Female')])
     description = StringField('Short description about yourself', default= "Hi, I'm a new user") 
-    password = PasswordField('Password', validators= [DataRequired()])
+    password = PasswordField('Password', validators= [DataRequired(), Length(min = 6)])
     confirm_password = PasswordField('Confirm Password', validators= [DataRequired(), EqualTo('password')])
     type_user = 0
 
@@ -66,7 +66,7 @@ class UpdateAccountForm(FlaskForm):
 class ArticleForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(max = 80)])
     description = TextAreaField('Short description', validators = [DataRequired(),  Length(max = 300)], render_kw={'class': 'form-control', 'rows': 5})
-    content = TextAreaField('Body Content', validators= [DataRequired(), Length(max = 5000)], render_kw={'class': 'form-control', 'rows': 20})
+    content = TextAreaField('Body Content (markdown)', validators= [DataRequired(), Length(max = 5000)], render_kw={'class': 'form-control', 'rows': 20})
     category = SelectField("Categories", choices = [("Stars", "Stars"), ("TV Shows", 'TV Shows'), ("Music", "Music"), ("Sport", "Sport"), ("Fashion", "Fashion"), ("Travel", "Travel"), ("Life", "Life")])
     
     cover_image = FileField('Upload cover picture', validators = [DataRequired(), FileAllowed(['jpg', 'png'])])
@@ -86,3 +86,7 @@ class UpdateArticleForm(FlaskForm):
 class SearchForm(FlaskForm):
     search = StringField('search', validators=[DataRequired()])
     submit = SubmitField('Search')
+
+class LoginFormAdmin(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')

@@ -35,7 +35,7 @@
 
         <!-- 3 later post  -->
         {% for post in posts %}
-        <div class="col-md-4 col-sm-6 mt-3">
+        <div class="col-md-4 col-sm-6 mt-4">
             <a class="card h-100" href="{{ url_for('article', post_id = post.id) }}">
                 <img src="{{ image_file }}{{ post.cover_image }}"
                     class="card-img-top" alt="..." width="300" height="200">
@@ -96,13 +96,13 @@
         a {
             box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
             transform: scale(1);
-            transition: .1s ease-in-out;
+            transition: .3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
         }
 
         a:hover {
             text-decoration: none;
             transform: scale(1.02);
-            transition: .1s ease-in-out;
+            transition: .3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
         }
 
         .nav-link:hover {

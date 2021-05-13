@@ -1,0 +1,40 @@
+{% extends "layout_admin.html" %}
+{% block content %}
+<h1>Articles</h1>
+<div class="container row justify-content-center" style="margin: 0 auto;">
+    <img class="row" src="{{ image_file }}">
+
+    <div class="table-responsive-sm mt-5">
+        <h2 class="text-center mb-4">Article Table</h2>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">title</th>
+                    <th scope="col">date and time</th>
+                    <th scope="col">category</th>
+                    <th scope="col">delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td>{{ post.id }}</td>
+                    <td><a href="{{ url_for('article', post_id = post.id) }}">{{ post.title }}</a></td>
+                    <td>{{ post.date_posted }}</td>
+                    <td>{{ post.category }}</td>
+                    <td><a href="{{ url_for('delete_article', post_id = post.id) }}"><button type='button' class="btn btn-danger btn-sm m-1">Delete</button></a></td>
+                            
+                    
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock content%}

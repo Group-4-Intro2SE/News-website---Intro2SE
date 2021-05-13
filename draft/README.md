@@ -5,3 +5,4 @@
 - Flask-sqlalchemy
 - flask-bcrypt
 - flask-login
+- Flask-Markdown

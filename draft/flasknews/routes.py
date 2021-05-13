@@ -3,7 +3,7 @@ import secrets
 from sqlalchemy import desc
 from flask import render_template, url_for, flash, redirect, request, abort
 from flasknews import app, db, bcrypt
-from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm, UpdateArticleForm, SearchForm
+from flasknews.forms import RegistrationForm, LoginForm, UpdateAccountForm, RegistrationFormReporter, ArticleForm, UpdateArticleForm, SearchForm, LoginFormAdmin
 from flasknews.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -205,7 +205,7 @@ temptemp = ''
 @app.route("/article/new", methods = ['GET', 'POST'])
 @login_required
 def new_article():
-    session['url'] = url_for('article/new')
+    session['url'] = url_for('new_article')
     # Only reporter can access this page
     form = ArticleForm()
 
@@ -274,18 +274,15 @@ def update_article(post_id):
         return render_template('create_article.html', title = 'Update Article', form = form, legend = 'Update article')
 
 
-@app.route("/article/<int:post_id>/delete", methods = ['POST'])
-@login_required
+@app.route("/admin/dash/article/<int:post_id>/delete", methods = ['POST', 'GET'])
 def delete_article(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
-        abort(403)
+    post = Post.query.get(post_id)
     
     # delete
     db.session.delete(post)
     db.session.commit()
-    flash('Your post: \'' + post.title + '\' has been deleted', 'success')
-    return redirect(url_for('home'))
+
+    return redirect(url_for('admin_dash_article'))
 
 @app.route("/search", methods = ['GET', 'POST'])
 def search():
@@ -324,6 +321,76 @@ def search_results(query):
 @app.route("/search/error")
 def search_error():
     session['url'] = url_for('search_error')
-    
+
     image_file = url_for('static', filename = 'search_error.jpg')
     return render_template('search_error.html', image_file = image_file)
+
+
+admin_state = 0
+
+@app.route("/admin", methods = ['GET', 'POST'])
+@app.route("/admin/login", methods = ['GET', 'POST'])
+def admin_login():
+    logout_user()
+    keypass = "admin"
+    global admin_state
+
+    form = LoginFormAdmin()
+    if form.validate_on_submit():
+        if form.password.data == keypass:
+            admin_state = 1
+            return redirect(url_for('admin_dash'))
+        else:
+            admin_state = 0
+            flash('Wrong password, please try again', 'danger')
+
+
+    return render_template('admin_login.html', form = form)
+
+
+@app.route("/admin/dash", methods = ['GET'])
+def admin_dash():
+    if not admin_state:
+        return redirect(url_for('admin_login'))
+    
+    posts = Post.query.all()
+    viewers = User.query.filter_by(type_user = 0).all()
+    reporters = User.query.filter_by(type_user = 1).all()
+
+    link = url_for('admin_dash_article')
+
+    return render_template('admin_dash.html', posts = posts, viewers = viewers, reporters = reporters, link = link)
+
+@app.route("/admin/dash/article")
+def admin_dash_article():
+    if not admin_state:
+        return redirect(url_for('admin_login'))
+    
+    import pandas as pd
+    import seaborn as sns 
+    import matplotlib.pyplot as plt
+
+    data = db.session.query(Post).all()
+    df = pd.DataFrame([(d.id, d.date_posted) for d in data], 
+                    columns=['id', 'date_posted'])
+
+    df['date_posted'] = df['date_posted'].dt.round('H')
+    df_group = df.groupby('date_posted')['id'].count()
+    df_group = df_group.reset_index()
+    df_group['count'] = df_group['id'].cumsum()
+
+    plt.style.use('ggplot')
+    sns.lineplot(x = 'date_posted', y = 'count', data = df_group)
+    plt.xlabel('Date and time posted')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.subplots_adjust(bottom=0.19)
+    plt.tick_params(axis='x', colors='black')
+    plt.tick_params(axis='y', colors='black')
+
+    plt.savefig('flasknews/static/article_line_plot.png')
+
+    image_file = url_for('static', filename = 'article_line_plot.png')
+    
+
+    return render_template('admin_dash_article.html', posts = data, image_file = image_file)

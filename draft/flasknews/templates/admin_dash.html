@@ -1,0 +1,49 @@
+{% extends "layout_admin.html" %}
+{% block content %}
+    <h1>Admin</h1>
+    <div class="container d-flex justify-content-center">
+        <a href="{{ url_for('admin_dash_article') }}" class="card text-white bg-primary mb-3 mt-5" id="card-1" style="max-width: 18rem;">
+            <div class="card-header">Article</div>
+            <div class="card-body">
+                <p class="card-text">{{ posts|length }}</p>
+            </div>
+        </a>
+
+        <a href="#" class="card text-white bg-dark mb-3 mt-5" style="max-width: 18rem;">
+            <div class="card-header">Viewer</div>
+            <div class="card-body">
+                <p class="card-text">{{ viewers|length }}</p>
+            </div>
+        </a>
+
+        
+        <a href="#" class="card text-white bg-success mb-3 mt-5" style="max-width: 18rem;">
+            <div class="card-header">Reporters</div>
+            <div class="card-body">
+                <p class="card-text">{{ reporters|length }}</p>
+            </div>
+        </a>
+    </div>
+
+    <style type='text/css'>
+        .card {
+            text-align: center;
+            width: 15rem;
+            height: 15rem;
+            font-size: 2em;
+            margin: 0 2rem;
+        }
+        .card:hover {
+            text-decoration: none;
+        }
+
+        #card-1 {
+            background: #1266F1;
+        }
+
+        .card-text {
+            font-size: 2em;
+            /* text-align: center; */
+        }
+    </style>
+{% endblock content%}
