@@ -1,5 +1,6 @@
 {% extends "layout_admin.html" %}
 {% block content %}
+<script src="https://www.w3schools.com/lib/w3.js"></script>
 <h1>Articles</h1>
 <div class="container row justify-content-center" style="margin: 0 auto;">
     <img class="row" src="{{ image_file }}">
@@ -9,16 +10,16 @@
         <table class="table">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">title</th>
-                    <th scope="col">date and time</th>
-                    <th scope="col">category</th>
-                    <th scope="col">delete</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(1)')">id</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(2)')">title</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(3)')">date and time</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(4)')">category</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(5)')">delete</th>
                 </tr>
             </thead>
             <tbody>
                 {% for post in posts %}
-                <tr>
+                <tr class="item">
                     <td>{{ post.id }}</td>
                     <td><a href="{{ url_for('article', post_id = post.id) }}">{{ post.title }}</a></td>
                     <td>{{ post.date_posted }}</td>

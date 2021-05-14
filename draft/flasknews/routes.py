@@ -93,35 +93,6 @@ def register():
     return render_template('register.html', title = 'Register', form = form)
 
 
-@app.route("/reg_reporter", methods = ['GET', 'POST'])
-def register_reporter():
-
-    # user already logged in
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-
-    form = RegistrationFormReporter()
-    if form.validate_on_submit():
-        # hash the password
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username = form.username.data, 
-                    email = form.email.data, 
-                    password = hashed_password,
-                    is_male = form.is_male.data, 
-                    type_user = form.type_user,
-                    description = form.description.data)
-        
-        # add to database
-        db.session.add(user)
-        db.session.commit()
-
-        flash(f'Account created for {form.username.data}!', 'success')
-
-        # redirect user to login page
-        return redirect(url_for('login'))
-
-    return render_template('register.html', title = 'Register', form = form)
-
 @app.route("/login", methods = ['GET', 'POST'])
 def login():
     # user already logged in
@@ -372,12 +343,12 @@ def admin_dash():
 def admin_dash_article():
     if not admin_state:
         return redirect(url_for('admin_login'))
-    
+
     import pandas as pd
     import seaborn as sns 
     import matplotlib.pyplot as plt
 
-    data = db.session.query(Post).all()
+    data = Post.query.all()
     df = pd.DataFrame([(d.id, d.date_posted) for d in data], 
                     columns=['id', 'date_posted'])
 
@@ -389,16 +360,89 @@ def admin_dash_article():
     plt.style.use('ggplot')
     sns.lineplot(x = 'date_posted', y = 'count', data = df_group)
     plt.xlabel('Date and time posted')
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.19)
     plt.tick_params(axis='x', colors='black')
     plt.tick_params(axis='y', colors='black')
 
-    print(df_group)
     plt.savefig('flasknews/static/article_line_plot.png')
 
     image_file = url_for('static', filename = 'article_line_plot.png')
     
 
     return render_template('admin_dash_article.html', posts = data, image_file = image_file)
+
+@app.route("/admin/dash/reporter")
+def admin_dash_reporter():
+    if not admin_state:
+        return redirect(url_for('admin_login'))
+    
+    reporters = User.query.filter_by(type_user = 1).all()
+    print(reporters)
+    posts = Post.query.all()
+
+    return render_template('admin_dash_reporter.html', reporters = reporters, posts = posts)
+
+
+
+@app.route("/admin/dash/reporter/reg_reporter", methods = ['GET', 'POST'])
+def register_reporter():
+    if not admin_state:
+        return redirect(url_for('admin_login'))
+
+    form = RegistrationFormReporter()
+    if form.validate_on_submit():
+        # hash the password
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username = form.username.data, 
+                    email = form.email.data, 
+                    password = hashed_password,
+                    is_male = form.is_male.data, 
+                    type_user = form.type_user,
+                    description = form.description.data)
+        
+        # add to database
+        db.session.add(user)
+        db.session.commit()
+
+        flash(f'Account created for {form.username.data}!', 'success')
+
+        # redirect user to login page
+        return redirect(url_for('admin_dash'))
+
+    return render_template('register.html', title = 'Register', form = form)
+
+
+@app.route('/admin/dash/reporter/<idd>', methods = ['GET', 'POST'])
+def admin_dash_reporter_account(idd): 
+    if not admin_state:
+        return redirect(url_for('admin_login'))
+
+    current_user_link = User.query.filter_by(id = idd).first()
+
+    
+
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            # print(form.picture.data)
+            picture_file = save_picture(form.picture.data)
+            current_user_link.image_file = picture_file
+
+        current_user_link.username = form.username.data
+        current_user_link.email = form.email.data
+        current_user_link.description = form.description.data
+
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('account'))
+
+    elif request.method == 'GET':
+        form.username.data = current_user_link.username
+        form.email.data = current_user_link.email
+        form.description.data = current_user_link.description
+    
+    image_file = url_for('static', filename = 'profile_pics/' + current_user_link.image_file)
+
+    return render_template('account.html', title = 'Account', image_file = image_file, form = form, current_user = current_user_link)

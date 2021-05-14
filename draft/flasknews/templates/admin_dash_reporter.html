@@ -1,0 +1,57 @@
+{% extends "layout_admin.html" %}
+{% block content %}
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<h1>Articles</h1>
+<div class="container" style="margin: 0 auto;">
+    <div>
+        <a href="{{ url_for('register_reporter') }}" class="card text-white bg-primary mb-3 mt-5" id="card-1"
+            style="max-width: 18rem;">
+            <div class="card-body" style="text-align: center; font-size: 1.5em;">
+                <p class="card-text">+ Add new reporter</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="table-responsive-sm mt-5">
+        <h2 class="text-center mb-4">Reporter Table</h2>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(1)')">id</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(2)')">Username</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(3)')">Gender (1: male)</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(4)')">Email</th>
+                    <th scope="col" onclick="w3.sortHTML('.table','.item', 'td:nth-child(5)')">Posts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reporter in reporters %}
+                <tr class="item">
+                    
+                    <td>{{ reporter.id }}</td>
+                    <td><a href="{{ url_for('admin_dash_reporter_account', idd = reporter.id) }}">{{ reporter.username }}</a></td>
+                    <td>{{ reporter.is_male }}</td>
+                    <td>{{ reporter.email }}</td>
+
+                    <td>
+                        {% for post in reporter.posts %}
+                        
+                            <span><a href="{{ url_for('article', post_id = post.id) }}">{{ post.id }},</a></span>
+                        <!-- <td><a href="{{ url_for('article', post_id = post.id) }}">{{ post.title }}</a></td> -->
+                    
+
+                        {% endfor %}
+                    </td>
+     
+                </tr>
+               {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock content%}
+

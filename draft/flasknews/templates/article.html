@@ -1,21 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
-<article class="media content-section">
-    <!-- profile image of reporter -->
-    <img class="rounded-circle article-img"
-        src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+<article class="media content-section d-flex flex-column justify-content-center" style="font-family: Arial, Helvetica, sans-serif;">
+    <img style="margin: 0 auto;" src="{{ url_for('static', filename='article_pics/' + post.cover_image) }}" alt="">
 
-    <div class="media-body">
-        <div class="article-metadata">
+    <h1 class='article-title mt-5' style="width: 100%;">{{ post.title }}</h1>
+    <div class="d-flex flex-row w-100 align-items-center justify-content-around">
+
+        <div class="article-metadata d-flex flex-column" style="min-width: 15%;">
+            <img class="rounded-circle article-img align-items-start"
+                src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
             <a class="mr-2" href="#">{{ post.author.username }}</a>
             <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y, %H:%M') }}</small>
             {% if post.author == current_user or admin_state == 1%}
             <div>
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_article', post_id = post.id)}}">Update</a>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1"
+                    href="{{ url_for('update_article', post_id = post.id)}}">Update</a>
             </div>
             {% endif %}
         </div>
-        <h2 class='article-title'>{{ post.title }}</h2>
+        <h4 class='article-content  my-5 mx-1' style="width: 100%;">{{ post.description }}</h4>
+    </div>
+
+
+
+    <div class="media-body">
+
         <p class="article-content">{{ post.content | markdown}}</p>
     </div>
 </article>
