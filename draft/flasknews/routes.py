@@ -352,26 +352,26 @@ def admin_dash_article():
     df = pd.DataFrame([(d.id, d.date_posted) for d in data], 
                     columns=['id', 'date_posted'])
 
-    df['date_posted'] = df['date_posted'].dt.round('H')
-    df_group = df.groupby('date_posted')['id'].count()
-    df_group = df_group.reset_index()
-    df_group['count'] = df_group['id'].cumsum()
+    # df['date_posted'] = df['date_posted'].dt.round('H')
+    # df_group = df.groupby('date_posted')['id'].count()
+    # df_group = df_group.reset_index()
+    # df_group['count'] = df_group['id'].cumsum()
 
-    plt.style.use('ggplot')
-    sns.lineplot(x = 'date_posted', y = 'count', data = df_group)
-    plt.xlabel('Date and time posted')
-    plt.xticks(rotation=90)
-    plt.tight_layout()
-    plt.subplots_adjust(bottom=0.19)
-    plt.tick_params(axis='x', colors='black')
-    plt.tick_params(axis='y', colors='black')
+    # plt.style.use('ggplot')
+    # sns.lineplot(x = 'date_posted', y = 'count', data = df_group)
+    # plt.xlabel('Date and time posted')
+    # plt.xticks(rotation=90)
+    # plt.tight_layout()
+    # plt.subplots_adjust(bottom=0.19)
+    # plt.tick_params(axis='x', colors='black')
+    # plt.tick_params(axis='y', colors='black')
 
-    plt.savefig('flasknews/static/article_line_plot.png')
+    # plt.savefig('flasknews/static/article_line_plot.png')
 
-    image_file = url_for('static', filename = 'article_line_plot.png')
+    # image_file = url_for('static', filename = 'article_line_plot.png')
     
 
-    return render_template('admin_dash_article.html', posts = data, image_file = image_file)
+    return render_template('admin_dash_article.html', posts = data)
 
 @app.route("/admin/dash/reporter")
 def admin_dash_reporter():
